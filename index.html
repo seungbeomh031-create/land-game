@@ -33,8 +33,15 @@
             <option value="8">8 × 8 (64칸 - 대격돌)</option>
           </select>
         </div>
+        <button id="top-diff-btn" class="diff-badge-btn" title="난이도 변경">
+          <span id="top-diff-icon">⚡</span>
+          <span id="top-diff-text">보통</span>
+        </button>
         <button id="sound-toggle-btn" class="icon-btn" title="사운드 켜기/끄기" aria-label="사운드 토글">
           <span id="sound-icon">🔊</span>
+        </button>
+        <button id="home-btn" class="icon-btn" title="인트로 화면 & 난이도 설정으로 이동" aria-label="홈으로">
+          <span>🏠</span>
         </button>
       </div>
     </header>
@@ -119,6 +126,10 @@
         <span class="btn-icon">💡</span>
         <span class="btn-text">게임 방법</span>
       </button>
+      <button id="footer-intro-btn" class="action-btn btn-intro">
+        <span class="btn-icon">🏠</span>
+        <span class="btn-text">인트로 / 난이도</span>
+      </button>
     </footer>
   </div>
 
@@ -145,10 +156,14 @@
         </div>
       </div>
 
-      <div class="modal-actions">
+      <div class="modal-actions modal-action-stack">
         <button id="modal-restart-btn" class="action-btn btn-restart modal-btn">
           <span class="btn-icon">🔄</span>
           <span class="btn-text">한 판 더 대결하기!</span>
+        </button>
+        <button id="modal-intro-btn" class="action-btn btn-intro modal-btn">
+          <span class="btn-icon">🏠</span>
+          <span class="btn-text">난이도 변경 & 인트로</span>
         </button>
       </div>
     </div>
@@ -158,7 +173,7 @@
   <div id="help-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-header-simple">
-        <h3>📖 6×6 땅따먹기 게임 규칙</h3>
+        <h3>📖 땅따먹기 대격돌 게임 규칙</h3>
         <button id="help-close-btn" class="close-x-btn" aria-label="닫기">×</button>
       </div>
       <div class="help-content">
@@ -172,17 +187,121 @@
         </div>
         <div class="rule-item">
           <span class="rule-num">3</span>
-          <p><strong>내 땅 재선택 불가:</strong> 이미 내 소유인 칸은 선택해도 아무런 변화가 없으며, <strong>턴이 넘어가지 않는 무효 행동</strong>입니다.</p>
+          <p><strong>내 땅 재선택 불가:</strong> 이미 내 소유인 칸은 선택해도 아무런 변화가 없으며, <strong>턴과 기회가 보존</strong>되는 무효 행동입니다.</p>
         </div>
         <div class="rule-item">
           <span class="rule-num">4</span>
-          <p><strong>20번의 기회 & 승리 판정:</strong> 각 플레이어에게 <strong>총 20번의 행동 기회</strong>가 주어집니다. <strong>36칸이 모두 채워지거나 양측 모두 20번의 기회를 소진</strong>하면 최종 점수를 비교하여 더 많은 땅을 차지한 쪽이 승리합니다! (점수가 같을 때만 무승부)</p>
+          <p><strong>제한 기회 & 승리 판정:</strong> 각 플레이어에게 주어지는 <strong>기회를 소진하거나 모든 칸이 채워지면</strong> 최종 점수를 비교하여 더 많은 땅을 차지한 쪽이 승리합니다!</p>
         </div>
       </div>
       <div class="modal-actions">
         <button id="help-ok-btn" class="action-btn btn-restart modal-btn">
-          <span>이해했어요! 게임 시작</span>
+          <span>확인 완료</span>
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Intro Modal -->
+  <div id="intro-modal" class="intro-overlay" role="dialog" aria-modal="true">
+    <div class="intro-card">
+      <!-- Intro Hero Banner -->
+      <div class="intro-hero-wrapper">
+        <img src="assets/banner.jpg" alt="땅따먹기 대격돌 메인 일러스트" class="intro-hero-image" />
+        <div class="intro-hero-overlay">
+          <span class="intro-badge">✨ 턴제 전략 아케이드 배틀</span>
+          <h2 class="intro-main-title">땅따먹기 <span class="highlight-text">대격돌!</span></h2>
+          <p class="intro-main-sub">LAND GRAB BATTLE</p>
+        </div>
+      </div>
+
+      <div class="intro-scroll-area">
+        <!-- Quick Rules Cards -->
+        <div class="intro-section">
+          <h3 class="intro-section-title">
+            <span class="title-icon">📖</span>
+            <span>간단 게임 규칙</span>
+          </h3>
+          <div class="intro-rules-grid">
+            <div class="intro-rule-box">
+              <div class="intro-rule-icon">🏰</div>
+              <div class="intro-rule-text">
+                <strong>1. 빈 땅 점령</strong>
+                <p>빈 칸을 터치해 파란색 내 영토로 선점하세요!</p>
+              </div>
+            </div>
+            <div class="intro-rule-box">
+              <div class="intro-rule-icon">⚔️</div>
+              <div class="intro-rule-text">
+                <strong>2. 땅 빼앗기</strong>
+                <p>상대의 빨간 땅을 터치해 즉시 내 영토로 탈환합니다!</p>
+              </div>
+            </div>
+            <div class="intro-rule-box">
+              <div class="intro-rule-icon">🛡️</div>
+              <div class="intro-rule-text">
+                <strong>3. 내 영토 보호</strong>
+                <p>이미 내 땅인 곳은 실수로 눌러도 기회가 깎이지 않아요.</p>
+              </div>
+            </div>
+            <div class="intro-rule-box">
+              <div class="intro-rule-icon">🏆</div>
+              <div class="intro-rule-text">
+                <strong>4. 영토 승리</strong>
+                <p>기회 소진 시 더 많은 땅을 차지한 쪽이 승리합니다!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Difficulty Selection -->
+        <div class="intro-section">
+          <h3 class="intro-section-title">
+            <span class="title-icon">🎯</span>
+            <span>게임 난이도 선택</span>
+          </h3>
+          <div class="difficulty-selector-group" role="radiogroup" aria-label="난이도 선택">
+            <button type="button" class="diff-card-btn" data-difficulty="easy" role="radio" aria-checked="false">
+              <div class="diff-card-badge tag-easy">초보자 추천</div>
+              <div class="diff-card-emoji">🌱</div>
+              <div class="diff-card-info">
+                <span class="diff-card-title">쉬움 (Easy)</span>
+                <span class="diff-card-desc">AI가 주로 빈 칸만 탐색하며 땅을 거의 빼앗지 않음</span>
+              </div>
+              <div class="diff-check-mark">✔</div>
+            </button>
+
+            <button type="button" class="diff-card-btn active" data-difficulty="normal" role="radio" aria-checked="true">
+              <div class="diff-card-badge tag-normal">표준 배틀</div>
+              <div class="diff-card-emoji">⚡</div>
+              <div class="diff-card-info">
+                <span class="diff-card-title">보통 (Normal)</span>
+                <span class="diff-card-desc">균형잡힌 공수 전략! 적절하게 플레이어 땅을 탈환</span>
+              </div>
+              <div class="diff-check-mark">✔</div>
+            </button>
+
+            <button type="button" class="diff-card-btn" data-difficulty="hard" role="radio" aria-checked="false">
+              <div class="diff-card-badge tag-hard">도전 과제</div>
+              <div class="diff-card-emoji">🔥</div>
+              <div class="diff-card-info">
+                <span class="diff-card-title">어려움 (Hard)</span>
+                <span class="diff-card-desc">스마트한 공격형 AI! 핵심 영토를 집요하게 노림</span>
+              </div>
+              <div class="diff-check-mark">✔</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Big Start Action Button -->
+        <div class="intro-cta-wrap">
+          <button id="intro-start-btn" class="intro-start-button" aria-label="선택한 난이도로 게임 시작">
+            <span class="start-btn-sparkle">✨</span>
+            <span class="start-btn-label">게임 시작하기!</span>
+            <span class="start-btn-arrow">➔</span>
+          </button>
+          <p class="intro-cta-hint">팁: 게임 도중 상단의 🏠 버튼으로 언제든 난이도를 변경할 수 있어요!</p>
+        </div>
       </div>
     </div>
   </div>

@@ -285,6 +285,7 @@ class ConfettiSystem {
 }
 
 // Game State & Controller
+// Game State & Controller
 class LandGrabGame {
   constructor() {
     this.boardSize = 6; // default 6x6
@@ -293,6 +294,9 @@ class LandGrabGame {
     this.isUserTurn = true;
     this.isGameOver = false;
     this.lastActionIdx = -1;
+
+    // Difficulty Settings: 'easy' | 'normal' | 'hard'
+    this.difficulty = 'normal';
 
     // Turn / Chances Limit (20 chances each)
     this.maxChances = 20;
@@ -324,8 +328,17 @@ class LandGrabGame {
     this.soundIcon = document.getElementById('sound-icon');
     this.resetBtn = document.getElementById('reset-btn');
     this.ruleBtn = document.getElementById('rule-btn');
+    this.topDiffBtn = document.getElementById('top-diff-btn');
+    this.topDiffIcon = document.getElementById('top-diff-icon');
+    this.topDiffText = document.getElementById('top-diff-text');
+    this.homeBtn = document.getElementById('home-btn');
+    this.footerIntroBtn = document.getElementById('footer-intro-btn');
 
     // Modals
+    this.introModal = document.getElementById('intro-modal');
+    this.introStartBtn = document.getElementById('intro-start-btn');
+    this.diffCardBtns = document.querySelectorAll('.diff-card-btn');
+
     this.resultModal = document.getElementById('result-modal');
     this.modalTitle = document.getElementById('modal-title');
     this.modalSubtitle = document.getElementById('modal-subtitle');
@@ -335,6 +348,7 @@ class LandGrabGame {
     this.modalUserPct = document.getElementById('modal-user-pct');
     this.modalCompPct = document.getElementById('modal-comp-pct');
     this.modalRestartBtn = document.getElementById('modal-restart-btn');
+    this.modalIntroBtn = document.getElementById('modal-intro-btn');
 
     this.helpModal = document.getElementById('help-modal');
     this.helpCloseBtn = document.getElementById('help-close-btn');
@@ -345,6 +359,7 @@ class LandGrabGame {
     this.confetti = new ConfettiSystem('fx-canvas');
 
     this.bindEvents();
+    this.setDifficulty('normal');
     this.initGame();
   }
 
@@ -365,6 +380,13 @@ class LandGrabGame {
       this.initGame();
     });
 
+    if (this.modalIntroBtn) {
+      this.modalIntroBtn.addEventListener('click', () => {
+        this.hideModal(this.resultModal);
+        this.showIntro();
+      });
+    }
+
     this.ruleBtn.addEventListener('click', () => this.showModal(this.helpModal));
     this.helpCloseBtn.addEventListener('click', () => this.hideModal(this.helpModal));
     this.helpOkBtn.addEventListener('click', () => this.hideModal(this.helpModal));
@@ -373,6 +395,97 @@ class LandGrabGame {
     this.helpModal.addEventListener('click', (e) => {
       if (e.target === this.helpModal) this.hideModal(this.helpModal);
     });
+
+    // Intro Screen & Difficulty Events
+    if (this.introStartBtn) {
+      this.introStartBtn.addEventListener('click', () => {
+        this.hideIntro();
+        this.sounds.playPop(true);
+        this.initGame();
+      });
+    }
+
+    this.diffCardBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const diff = btn.dataset.difficulty;
+        this.setDifficulty(diff);
+        this.sounds.playPop(true);
+      });
+    });
+
+    if (this.topDiffBtn) {
+      this.topDiffBtn.addEventListener('click', () => this.showIntro());
+    }
+
+    if (this.homeBtn) {
+      this.homeBtn.addEventListener('click', () => this.showIntro());
+    }
+
+    if (this.footerIntroBtn) {
+      this.footerIntroBtn.addEventListener('click', () => this.showIntro());
+    }
+  }
+
+  setDifficulty(diff) {
+    this.difficulty = diff;
+
+    // Update Intro Screen Buttons
+    this.diffCardBtns.forEach((btn) => {
+      const isActive = btn.dataset.difficulty === diff;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
+    });
+
+    // Update Header Badge
+    if (this.topDiffBtn && this.topDiffIcon && this.topDiffText) {
+      this.topDiffBtn.className = `diff-badge-btn diff-${diff}`;
+      if (diff === 'easy') {
+        this.topDiffIcon.textContent = '🌱';
+        this.topDiffText.textContent = '쉬움';
+      } else if (diff === 'hard') {
+        this.topDiffIcon.textContent = '🔥';
+        this.topDiffText.textContent = '어려움';
+      } else {
+        this.topDiffIcon.textContent = '⚡';
+        this.topDiffText.textContent = '보통';
+      }
+    }
+
+    // Update Computer Status Card
+    const compNameSpan = this.cardCompEl ? this.cardCompEl.querySelector('.player-name span:first-child') : null;
+    const compTagSpan = this.cardCompEl ? this.cardCompEl.querySelector('.player-name .territory-tag') : null;
+    const compAvatar = this.cardCompEl ? this.cardCompEl.querySelector('.avatar-emoji') : null;
+
+    if (compNameSpan && compTagSpan) {
+      if (diff === 'easy') {
+        compNameSpan.textContent = '초보 AI 🌱';
+        compTagSpan.textContent = '쉬움 모드';
+        compTagSpan.className = 'territory-tag tag-easy-mode';
+        if (compAvatar) compAvatar.textContent = '🤖';
+      } else if (diff === 'hard') {
+        compNameSpan.textContent = '마스터 AI 🔥';
+        compTagSpan.textContent = '어려움 모드';
+        compTagSpan.className = 'territory-tag tag-hard-mode';
+        if (compAvatar) compAvatar.textContent = '👾';
+      } else {
+        compNameSpan.textContent = '컴퓨터 AI 🤖';
+        compTagSpan.textContent = '빨강 진영';
+        compTagSpan.className = 'territory-tag tag-red';
+        if (compAvatar) compAvatar.textContent = '🤖';
+      }
+    }
+  }
+
+  showIntro() {
+    if (this.introModal) {
+      this.introModal.classList.remove('hidden');
+    }
+  }
+
+  hideIntro() {
+    if (this.introModal) {
+      this.introModal.classList.add('hidden');
+    }
   }
 
   initGame() {
@@ -451,7 +564,15 @@ class LandGrabGame {
       this.updateTurnDisplay();
       this.boardEl.classList.add('board-locked');
 
-      const thinkingDelay = Math.floor(Math.random() * 140) + 380;
+      let thinkingDelay = 420;
+      if (this.difficulty === 'easy') {
+        thinkingDelay = Math.floor(Math.random() * 200) + 520;
+      } else if (this.difficulty === 'normal') {
+        thinkingDelay = Math.floor(Math.random() * 140) + 360;
+      } else {
+        thinkingDelay = Math.floor(Math.random() * 90) + 240;
+      }
+
       setTimeout(() => {
         this.computerMove();
       }, thinkingDelay);
@@ -471,10 +592,95 @@ class LandGrabGame {
     this.sounds.playInvalid();
   }
 
+  getNeighbors(idx) {
+    const neighbors = [];
+    const size = this.boardSize;
+    const row = Math.floor(idx / size);
+    const col = idx % size;
+
+    if (row > 0) neighbors.push((row - 1) * size + col);
+    if (row < size - 1) neighbors.push((row + 1) * size + col);
+    if (col > 0) neighbors.push(row * size + (col - 1));
+    if (col < size - 1) neighbors.push(row * size + (col + 1));
+
+    return neighbors;
+  }
+
+  findSmartEmptyCell(emptyIndices, smartRatio) {
+    if (emptyIndices.length === 0) return -1;
+    if (Math.random() >= smartRatio) {
+      return emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+    }
+
+    // Evaluate empty cells based on neighbor connectivity
+    let bestCell = emptyIndices[0];
+    let bestScore = -999;
+
+    const center = (this.boardSize - 1) / 2;
+
+    for (const idx of emptyIndices) {
+      const neighbors = this.getNeighbors(idx);
+      let score = 0;
+
+      // Comp adjacent count (reward connecting own territory)
+      const compNeighbors = neighbors.filter(n => this.boardState[n] === 'comp').length;
+      score += compNeighbors * 3;
+
+      // User adjacent count (blocking user expansion)
+      const userNeighbors = neighbors.filter(n => this.boardState[n] === 'user').length;
+      score += userNeighbors * 2;
+
+      // Center proximity bonus
+      const row = Math.floor(idx / this.boardSize);
+      const col = idx % this.boardSize;
+      const distFromCenter = Math.abs(row - center) + Math.abs(col - center);
+      score += (this.boardSize - distFromCenter);
+
+      // Add a slight random factor to prevent deterministic repetition
+      score += Math.random() * 1.5;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestCell = idx;
+      }
+    }
+
+    return bestCell;
+  }
+
+  findBestUserTargetToSteal(userIndices) {
+    if (userIndices.length === 0) return -1;
+
+    let bestCell = userIndices[0];
+    let bestScore = -999;
+
+    for (const idx of userIndices) {
+      const neighbors = this.getNeighbors(idx);
+      let score = 0;
+
+      // How many neighbors are user (breaking player clumps)
+      const userNeighbors = neighbors.filter(n => this.boardState[n] === 'user').length;
+      score += userNeighbors * 4;
+
+      // How many neighbors are comp (connecting to AI clumps)
+      const compNeighbors = neighbors.filter(n => this.boardState[n] === 'comp').length;
+      score += compNeighbors * 3.5;
+
+      score += Math.random() * 1.2;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestCell = idx;
+      }
+    }
+
+    return bestCell;
+  }
+
   computerMove() {
     if (this.isGameOver || this.compChances <= 0) return;
 
-    // 컴퓨터가 할 수 있는 유효한 후보군 (자신의 칸은 유효하지 않으므로 제외)
+    // 후보군 수집
     const emptyIndices = [];
     const userIndices = [];
 
@@ -486,24 +692,55 @@ class LandGrabGame {
       }
     }
 
-    // 행동 결정 (빈 칸 선점 vs 상대방 칸 빼앗기)
     let targetIdx = -1;
     let isSteal = false;
 
-    if (emptyIndices.length > 0) {
-      // 빈 칸이 아직 남아있을 때 약 32% 확률로 플레이어 땅 빼앗기
-      const shouldSteal = userIndices.length > 0 && Math.random() < 0.32 && emptyIndices.length > 2;
+    // 난이도별 행동 결정
+    if (this.difficulty === 'easy') {
+      // [쉬움] AI가 주로 빈 칸만 탐색하며 상대 땅을 거의 빼앗지 않음 (약 10% 미만)
+      const shouldSteal = userIndices.length > 0 && Math.random() < 0.10 && emptyIndices.length > 3;
 
       if (shouldSteal) {
         targetIdx = userIndices[Math.floor(Math.random() * userIndices.length)];
         isSteal = true;
-      } else {
+      } else if (emptyIndices.length > 0) {
+        // 완전 무작위 빈 칸 선택
         targetIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
         isSteal = false;
+      } else if (userIndices.length > 0) {
+        targetIdx = userIndices[Math.floor(Math.random() * userIndices.length)];
+        isSteal = true;
       }
-    } else if (userIndices.length > 0) {
-      targetIdx = userIndices[Math.floor(Math.random() * userIndices.length)];
-      isSteal = true;
+    } else if (this.difficulty === 'normal') {
+      // [보통] 균형잡힌 공수 (약 32% 확률로 땅 빼앗기, 적절한 빈 칸 선점)
+      if (emptyIndices.length > 0) {
+        const shouldSteal = userIndices.length > 0 && Math.random() < 0.32 && emptyIndices.length > 2;
+        if (shouldSteal) {
+          targetIdx = userIndices[Math.floor(Math.random() * userIndices.length)];
+          isSteal = true;
+        } else {
+          targetIdx = this.findSmartEmptyCell(emptyIndices, 0.45);
+          isSteal = false;
+        }
+      } else if (userIndices.length > 0) {
+        targetIdx = userIndices[Math.floor(Math.random() * userIndices.length)];
+        isSteal = true;
+      }
+    } else {
+      // [어려움] 고난도 전략 AI!
+      // 플레이어의 주요 영토를 65% 확률로 적극 탈환하고 인접 영토 확장
+      const shouldSteal = userIndices.length > 0 && (emptyIndices.length <= 2 || Math.random() < 0.65);
+
+      if (shouldSteal && userIndices.length > 0) {
+        targetIdx = this.findBestUserTargetToSteal(userIndices);
+        isSteal = true;
+      } else if (emptyIndices.length > 0) {
+        targetIdx = this.findSmartEmptyCell(emptyIndices, 0.90);
+        isSteal = false;
+      } else if (userIndices.length > 0) {
+        targetIdx = this.findBestUserTargetToSteal(userIndices);
+        isSteal = true;
+      }
     }
 
     if (targetIdx >= 0) {
@@ -531,7 +768,8 @@ class LandGrabGame {
       // 사용자 기회가 없으면 컴퓨터가 계속 진행
       this.updateTurnDisplay();
       this.boardEl.classList.add('board-locked');
-      setTimeout(() => this.computerMove(), 450);
+      const nextDelay = this.difficulty === 'hard' ? 280 : (this.difficulty === 'normal' ? 380 : 500);
+      setTimeout(() => this.computerMove(), nextDelay);
     }
   }
 
@@ -609,7 +847,8 @@ class LandGrabGame {
       this.cardUserEl.classList.add('active-turn');
       this.cardCompEl.classList.remove('active-turn');
     } else {
-      this.turnTextEl.textContent = `컴퓨터 차례! (남은 기회: ${this.compChances}회) 🤖`;
+      const compLabel = this.difficulty === 'hard' ? '마스터 AI' : (this.difficulty === 'easy' ? '초보 AI' : '컴퓨터');
+      this.turnTextEl.textContent = `${compLabel} 차례! (남은 기회: ${this.compChances}회) 🤖`;
       turnDot.classList.add('comp-turn');
       this.cardUserEl.classList.remove('active-turn');
       this.cardCompEl.classList.add('active-turn');
@@ -617,7 +856,7 @@ class LandGrabGame {
   }
 
   checkGameEnd() {
-    // 36칸이 모두 채워졌거나, 양측 모두 20번의 기회를 모두 소진했을 때
+    // 36칸이 모두 채워졌거나, 양측 모두 기회를 모두 소진했을 때
     const hasEmpty = this.boardState.some(state => state === null);
     const bothChancesExhausted = (this.userChances <= 0 && this.compChances <= 0);
 
@@ -651,12 +890,14 @@ class LandGrabGame {
     this.modalUserPct.textContent = `${userPct}% 점유`;
     this.modalCompPct.textContent = `${compPct}% 점유`;
 
+    const diffText = this.difficulty === 'easy' ? '쉬움' : (this.difficulty === 'hard' ? '어려움 🔥' : '보통');
+
     // 승리 판정: 플레이어 1 점수가 높으면 승리, 플레이어 2가 높으면 패배, 같을 때만 무승부
     if (userScore > compScore) {
       // 플레이어 1 승리
       this.modalIcon.textContent = '🏆';
       this.modalTitle.textContent = '플레이어 1 승리!';
-      this.modalSubtitle.textContent = `축하합니다! 총 20번의 기회 속에서 ${userScore}칸을 차지하여 컴퓨터(${compScore}칸)를 꺾고 승리했습니다!`;
+      this.modalSubtitle.textContent = `축하합니다! [${diffText}] 모드에서 ${userScore}칸을 차지하여 컴퓨터(${compScore}칸)를 꺾고 승리했습니다!`;
       this.sounds.playWin();
       this.confetti.burst(window.innerWidth / 2, window.innerHeight * 0.4);
       setTimeout(() => this.confetti.burst(window.innerWidth * 0.25, window.innerHeight * 0.5), 300);
@@ -665,13 +906,13 @@ class LandGrabGame {
       // 플레이어 2(컴퓨터) 승리
       this.modalIcon.textContent = '🤖';
       this.modalTitle.textContent = '컴퓨터(플레이어 2) 승리!';
-      this.modalSubtitle.textContent = `컴퓨터가 ${compScore}칸을 차지하여 승리했습니다 (${userScore} : ${compScore}). 다음 판에서 도전해보세요!`;
+      this.modalSubtitle.textContent = `[${diffText}] 모드에서 컴퓨터가 ${compScore}칸을 차지하여 승리했습니다 (${userScore} : ${compScore}). 다음 판에서 다시 도전해보세요!`;
       this.sounds.playLose();
     } else {
       // 두 플레이어의 점수가 같을 때만 무승부
       this.modalIcon.textContent = '🤝';
       this.modalTitle.textContent = '팽팽한 무승부!';
-      this.modalSubtitle.textContent = `양측 모두 20번의 기회를 모두 사용하고 정확히 ${userScore}칸씩 차지해 무승부로 끝났습니다!`;
+      this.modalSubtitle.textContent = `[${diffText}] 모드에서 양측 모두 정확히 ${userScore}칸씩 차지해 무승부로 끝났습니다!`;
       this.sounds.playDraw();
     }
 
@@ -681,11 +922,11 @@ class LandGrabGame {
   }
 
   showModal(modal) {
-    modal.classList.remove('hidden');
+    if (modal) modal.classList.remove('hidden');
   }
 
   hideModal(modal) {
-    modal.classList.add('hidden');
+    if (modal) modal.classList.add('hidden');
   }
 }
 

@@ -300,6 +300,16 @@ body::before {
   color: white;
 }
 
+.tag-easy-mode {
+  background: #10b981;
+  color: white;
+}
+
+.tag-hard-mode {
+  background: #dc2626;
+  color: white;
+}
+
 .score-display {
   display: flex;
   align-items: baseline;
@@ -916,11 +926,496 @@ body::before {
   }
 }
 
-/* Media Queries for Small Screens / Mobile */
+/* ==========================================================================
+   Intro Screen, Difficulty Cards & Header Navigation Controls
+   ========================================================================== */
+
+/* Top Header Difficulty Badge Button */
+.diff-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: white;
+  border: 1.5px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-game);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.diff-badge-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.diff-badge-btn:active {
+  transform: translateY(1px);
+}
+
+.diff-badge-btn.diff-easy {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.diff-badge-btn.diff-normal {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.diff-badge-btn.diff-hard {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+/* Intro Footer Button */
+.btn-intro {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3), 0 3px 0 #3730a3;
+}
+
+.btn-intro:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4), 0 3px 0 #3730a3;
+}
+
+.modal-action-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Fullscreen Intro Overlay Modal */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.intro-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-card {
+  max-width: 540px;
+  width: 100%;
+  max-height: 92vh;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: introPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes introPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Intro Hero Banner Image */
+.intro-hero-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #0f172a;
+}
+
+.intro-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: brightness(0.92);
+  transition: transform 0.6s ease;
+}
+
+.intro-card:hover .intro-hero-image {
+  transform: scale(1.03);
+}
+
+.intro-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px 22px;
+  color: white;
+}
+
+.intro-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  width: fit-content;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.intro-main-title {
+  font-family: var(--font-game);
+  font-size: 1.85rem;
+  line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.highlight-text {
+  color: #facc15;
+}
+
+.intro-main-sub {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  font-weight: 800;
+  color: #93c5fd;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Intro Scroll Area */
+.intro-scroll-area {
+  overflow-y: auto;
+  padding: 18px 22px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.intro-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-game);
+  font-size: 1.15rem;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+/* Rules Grid */
+.intro-rules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.intro-rule-box {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 11px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.intro-rule-box:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.intro-rule-icon {
+  font-size: 1.35rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.intro-rule-text strong {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.intro-rule-text p {
+  font-size: 0.74rem;
+  color: #64748b;
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Difficulty Selector Group */
+.difficulty-selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.diff-card-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.diff-card-btn:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.diff-card-btn[data-difficulty="easy"].active {
+  border-color: #10b981;
+  background: #ecfdf5;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.22);
+}
+
+.diff-card-btn[data-difficulty="normal"].active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22);
+}
+
+.diff-card-btn[data-difficulty="hard"].active {
+  border-color: #ef4444;
+  background: #fef2f2;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.22);
+}
+
+.diff-card-badge {
+  position: absolute;
+  top: -9px;
+  right: 14px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: white;
+}
+
+.diff-card-badge.tag-easy {
+  background: #10b981;
+}
+
+.diff-card-badge.tag-normal {
+  background: #2563eb;
+}
+
+.diff-card-badge.tag-hard {
+  background: #ef4444;
+}
+
+.diff-card-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.diff-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.diff-card-title {
+  font-family: var(--font-game);
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.diff-card-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.diff-check-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 900;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all 0.2s ease;
+}
+
+.diff-card-btn[data-difficulty="easy"].active .diff-check-mark {
+  opacity: 1;
+  transform: scale(1);
+  background: #10b981;
+}
+
+.diff-card-btn[data-difficulty="normal"].active .diff-check-mark {
+  opacity: 1;
+  transform: scale(1);
+  background: #2563eb;
+}
+
+.diff-card-btn[data-difficulty="hard"].active .diff-check-mark {
+  opacity: 1;
+  transform: scale(1);
+  background: #ef4444;
+}
+
+/* Intro CTA Button */
+.intro-cta-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.intro-start-button {
+  width: 100%;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #4338ca 100%);
+  color: white;
+  font-family: var(--font-game);
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.42), 0 4px 0 #1e40af;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.intro-start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.52), 0 4px 0 #1e40af;
+  filter: brightness(1.06);
+}
+
+.intro-start-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3), 0 1px 0 #1e40af;
+}
+
+.start-btn-sparkle {
+  font-size: 1.2rem;
+  animation: sparkleTwinkle 1.8s infinite ease-in-out;
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  50% { transform: scale(1.3) rotate(20deg); opacity: 1; }
+}
+
+.start-btn-arrow {
+  font-size: 1.3rem;
+  transition: transform 0.2s ease;
+}
+
+.intro-start-button:hover .start-btn-arrow {
+  transform: translateX(5px);
+}
+
+.intro-cta-hint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Media Queries for Small Screens */
 @media (max-width: 480px) {
   .game-wrapper {
     padding: 10px 10px 20px 10px;
     gap: 10px;
+  }
+
+  .intro-card {
+    max-height: 96vh;
+    border-radius: 18px;
+  }
+
+  .intro-hero-wrapper {
+    height: 160px;
+  }
+
+  .intro-main-title {
+    font-size: 1.5rem;
+  }
+
+  .intro-scroll-area {
+    padding: 14px 14px 18px 14px;
+    gap: 14px;
+  }
+
+  .intro-rules-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .intro-start-button {
+    padding: 14px 20px;
+    font-size: 1.2rem;
+  }
+
+  .diff-card-btn {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .diff-card-emoji {
+    font-size: 1.3rem;
+  }
+
+  .diff-card-title {
+    font-size: 0.95rem;
   }
 
   .status-panel {
@@ -961,7 +1456,8 @@ body::before {
   }
 
   .action-btn {
-    padding: 10px 18px;
-    font-size: 0.95rem;
+    padding: 10px 14px;
+    font-size: 0.88rem;
   }
 }
+
